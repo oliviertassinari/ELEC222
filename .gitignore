@@ -2,6 +2,7 @@
 # Compilation result
 work
 transcript
+db
 
 # Libraries
 *.lib
@@ -20,6 +21,8 @@ transcript
 *#
 *.swp
 *.#*
+*.qsf
+*.qpf
 
 # Executables
 *.exe
