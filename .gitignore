@@ -1,0 +1,26 @@
+
+# Compilation result
+work
+transcript
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+*~
+*.DS_Store
+*.dep
+\#*
+*._*
+*#
+*.swp
+
+# Executables
+*.exe
+*.out
+*.app
