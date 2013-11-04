@@ -15,15 +15,19 @@
 module fpga (input   CLK, SW, NRST,
              output  LED_VERTE, LED_ROUGE);
 
-   /* Création d'un compteur */
+   /* Zone de test de fonctionnement de la plaquette */
    logic [25:0]     cmpt;
+   logic            resync_rst;
+
+   reset #(rst_activity = 0) i_reset(.CLK(CLK), .NRST(NRST), .resync_rst(resync_rst));
 
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
 
-   always_ff @(posedge CLK or negedge NRST)
-     if (~NRST) cmpt <= '0;
+   always_ff @(posedge CLK or negedge resync_rst)
+     if (~resync_rst) cmpt <= '0;
      else cmpt <= cmpt + 1'd1;
+   // Fin zone de test plaquette
 
 endmodule // fpga
 
