@@ -12,6 +12,8 @@ module tb_fpga;
         CLK = 1'b0;
         NRST = 1'b0;
         SW = 1'b0;
+        @(negedge CLK);
+        NRST = 1'b1;
 
         repeat(1000)
         begin
