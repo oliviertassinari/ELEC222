@@ -44,9 +44,11 @@ set_location_assignment PIN_G26 -to NRST
 
 # LEDG0
 set_location_assignment PIN_AE23 -to LED_ROUGE
+set_instance_assignment -name OUTPUT_PIN_LOAD 8 -to LED_ROUGE
 
 # LEDR0
 set_location_assignment PIN_AE22 -to LED_VERTE
+set_instance_assignment -name OUTPUT_PIN_LOAD 8 -to LED_VERTE
 
-# LEDG0
+# SW0
 set_location_assignment PIN_N25 -to SW
