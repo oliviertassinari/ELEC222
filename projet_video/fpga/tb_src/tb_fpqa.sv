@@ -1,10 +1,25 @@
+/*
+ * Création du module testbench de fpga
+ *
+ * Nom 	        Type 	Nombre de bits 	Utilisation
+ * CLK       	entrée 	1 	            Horloge
+ * LED_VERTE 	sortie 	1 	            Affichage
+ * LED_ROUGE 	sortie 	1 	            Affichage
+ * SW 	        entrée 	1 	            commande 0/1
+ * NRST 	    entrée 	1 	            commande 0/1
+ *
+ * Fonction : Destiné à tester fpga.sv
+ *
+ */
+
 module tb_fpga;
 
    logic CLK, SW, NRST;
 
-   // Horloge 50Mhz
+   /* Horloge 50Mhz */
    always #10ns CLK = ~CLK;
 
+   /* Instanciation d'un module fpga */
    fpga i_fpga(CLK, SW, NRST, LED_ROUGE, LED_VERTE);
 
    initial
