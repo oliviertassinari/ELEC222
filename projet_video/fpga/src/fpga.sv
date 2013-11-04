@@ -22,8 +22,8 @@ module fpga (input   CLK, SW, NRST,
    assign LED_VERTE = cmpt[25];
 
    always_ff @(posedge CLK or negedge NRST)
-     if (~NRST) cmpt <= 'b0;
-     else cmpt <= cmpt +'d1;
+     if (~NRST) cmpt <= '0;
+     else cmpt <= cmpt + 1'd1;
 
 endmodule // fpga
 
