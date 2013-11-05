@@ -17,15 +17,15 @@ module fpga (input   CLK, SW, NRST,
 
    /* Zone de test de fonctionnement de la plaquette */
    logic [25:0]     cmpt;
-   logic            resync_rst;
+   logic            rst_async;
 
-   reset #(.rst_activity(0)) i_reset(.CLK(CLK), .NRST(NRST), .resync_rst(resync_rst));
+   reset #(.is_nrst('b1)) reset_i(.CLK(CLK), .RST(NRST), .rst_async(rst_async));
 
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
 
-   always_ff @(posedge CLK or negedge resync_rst)
-     if (~resync_rst) cmpt <= '0;
+   always_ff @(posedge CLK or posedge rst_async)
+     if (rst_async) cmpt <= '0;
      else cmpt <= cmpt + 1'd1;
    // Fin zone de test plaquette
 

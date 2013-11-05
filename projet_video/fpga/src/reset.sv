@@ -5,21 +5,21 @@
  * CLK       	entrée 	1 	            Horloge
  * NRST 	    entrée 	1 	            commande 0/1
  *
- * Fonction : Destiné à définri un reset stable
+ * Fonction : Destiné à définri un positif reset stable
  *
  */
 
-module reset #(parameter rst_activity = 'b1)(input   CLK, NRST,
-              output logic resync_rst);
+module reset #(parameter is_nrst = 'b1)(input   CLK, RST,
+              output logic rst_async);
 
-   logic            r0;
+   logic            registre;
 
    /* Création d'un RESET asynchrone stable */
-   always_ff @(posedge CLK or negedge NRST)
-     if(~NRST)
-       {resync_rst, r0} <= {rst_activity, rst_activity};
+   always_ff @(posedge CLK or posedge RST^is_nrst)
+     if(RST^is_nrst)
+       {rst_async, registre} <= {1'b1, 1'b0};
      else
-       {resync_rst, r0} <= {r0, ~rst_activity};
+       {rst_async, registre} <= {registre, 1'b0};
    // Fin RESET aysnchrone stable
 
 endmodule // reset
