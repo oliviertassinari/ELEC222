@@ -19,7 +19,7 @@ module fpga (input   CLK, SW, NRST,
    logic [25:0]     cmpt;
    logic            resync_rst;
 
-   reset #(rst_activity = 0) i_reset(.CLK(CLK), .NRST(NRST), .resync_rst(resync_rst));
+   reset #(.rst_activity(0)) i_reset(.CLK(CLK), .NRST(NRST), .resync_rst(resync_rst));
 
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
