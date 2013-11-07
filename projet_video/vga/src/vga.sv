@@ -14,8 +14,8 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
    enum   logic[2:0] {dispH, fpH, pulseH, bpH} stateH;
    enum   logic[2:0] {dispV, fpV, pulseV, bpV} stateV;
 
-   logic [31:0] ctH = 0;
-   logic [31:0] ctV = 0;
+   logic [$clog2(HDISP)-1:0] ctH = 0;
+   logic [$clog2(VDISP)-1:0] ctV = 0;
 
    logic rst_async;
    reset #(.is_nrst('b0)) reset_i(.CLK(VGA_CLK), .RST(RST), .rst_async(rst_async));
