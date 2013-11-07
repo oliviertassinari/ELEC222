@@ -15,10 +15,11 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
    logic [$clog2(HDISP)-1:0] ctH = 0;
    logic [$clog2(VDISP)-1:0] ctV = 0;
 
+   VGA_PLL i_vga_pll(CLK, VGA_CLK);
+
    always_comb
      begin
         VGA_SYNC = 0;
-        VGA_CLK = CLK;
 
         if(stateV == dispV && stateH == dispH)
           VGA_BLANK = 1;
