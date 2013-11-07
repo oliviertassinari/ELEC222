@@ -14,13 +14,17 @@
 
 module tb_fpga;
 
-   logic CLK, SW, NRST;
+   logic CLK, SW, NRST, CLK_AUX;
 
    /* Horloge 50Mhz */
    always #10ns CLK = ~CLK;
 
+   always_comb
+     CLK_AUX = CLK;
+
+
    /* Instanciation d'un module fpga */
-   fpga i_fpga(CLK, SW, NRST, LED_ROUGE, LED_VERTE);
+   fpga i_fpga(CLK, CLK_AUX, SW, NRST, LED_ROUGE, LED_VERTE, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
 
    initial
      begin: entree
