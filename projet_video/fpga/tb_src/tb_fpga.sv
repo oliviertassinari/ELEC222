@@ -19,8 +19,8 @@ module tb_fpga;
    /* Horloge 50Mhz */
    always #10ns CLK = ~CLK;
 
-   always_comb
-     CLK_AUX = CLK;
+
+   always #19ns  CLK_AUX = ~CLK_AUX;
 
 
    /* Instanciation d'un module fpga */
