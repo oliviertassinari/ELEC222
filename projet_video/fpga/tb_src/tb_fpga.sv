@@ -16,10 +16,10 @@ module tb_fpga;
 
    logic CLK, SW, NRST, CLK_AUX;
 
-   /* Horloge 50Mhz */
+   // Horloge 50Mhz
    always #10ns CLK = ~CLK;
 
-
+   // Horloge 27Mhz
    always #18.5ns  CLK_AUX = ~CLK_AUX;
 
 
