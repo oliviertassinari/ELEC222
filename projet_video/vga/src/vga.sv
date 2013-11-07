@@ -53,6 +53,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
         else
           begin
              ctH <= ctH - 1;
+             ctV <= ctV;
 
              if(ctH == 0)
                begin
