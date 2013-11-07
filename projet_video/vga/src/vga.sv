@@ -1,4 +1,4 @@
-module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC)
+module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
 
    localparam HFP = 16;
    localparam HPULSE = 96;
@@ -9,10 +9,10 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
    localparam VBP = 31;
 
    input CLK, RST;
-   output VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC;
+   output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC;
 
-   enum   logic[2:0] {disp, fp, pulse, bp} stateH;
-   enum   logic[2:0] {disp, fp, pulse, bp} stateV;
+   enum   logic[2:0] {dispH, fpH, pulseH, bpH} stateH;
+   enum   logic[2:0] {dispV, fpV, pulseV, bpV} stateV;
 
    logic [31:0] ctH = 0;
    logic [31:0] ctV = 0;
@@ -25,29 +25,29 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
         VGA_SYNC = 0;
         VGA_CLK = CLK;
 
-        if(stateV == disp && stateH == disp)
+        if(stateV == dispV && stateH == dispH)
           VGA_BLANK = 1;
         else
           VGA_BLANK = 0;
 
-        if(stateV == pulse)
+        if(stateV == pulseV)
           VGA_VS = 0;
         else
           VGA_VS = 1;
 
-        if(stateH == pulse)
+        if(stateH == pulseH)
           VGA_HS = 0;
         else
           VGA_HS = 1;
      end
 
-   always_ff
+   always_ff @(posedge VGA_CLK)
      begin
         if(rst_async)
           begin
-             stateH <= disp;
+             stateH <= dispH;
              ctH <= HDISP;
-             stateV <= disp;
+             stateV <= dispV;
              ctV <= VDISP;
           end
         else
@@ -56,51 +56,51 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
 
              if(ctH == 0)
                begin
-                  if(stateH == bp)
+                  if(stateH == bpH)
                     begin
                        case(stateV)
-                         disp:
+                         dispV:
                            begin
-                              stateV <= fp;
+                              stateV <= fpV;
                               ctV <= VFP;
                            end
-                         fp:
+                         fpV:
                            begin
-                              stateV <= pulse;
+                              stateV <= pulseV;
                               ctV <= VPULSE;
                            end
-                         puls:
+                         pulseV:
                            begin
-                              stateV <= bp;
+                              stateV <= bpV;
                               ctV <= VBP;
                            end
-                         bp:
+                         bpV:
                            begin
-                              stateV <= disp;
+                              stateV <= dispV;
                               ctV <= VDISP;
                            end
                        endcase
                     end
 
                   case(stateH)
-                    disp:
+                    dispH:
                       begin
-                         stateH <= fp;
+                         stateH <= fpH;
                          ctH <= HFP;
                       end
-                    fp:
+                    fpH:
                       begin
-                         stateH <= pulse;
+                         stateH <= pulseH;
                          ctH <= HPULSE;
                       end
-                    puls:
+                    pulseH:
                       begin
-                         stateH <= bp;
+                         stateH <= bpH;
                          ctH <= HBP;
                       end
-                    bp:
+                    bpH:
                       begin
-                         stateH <= disp;
+                         stateH <= dispH;
                          ctH <= HDISP;
                          ctV <= ctV - 1;
                       end
