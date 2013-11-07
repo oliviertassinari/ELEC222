@@ -51,7 +51,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
 
              if(ctH == 0)
                begin
-                  if(stateH == bpH)
+                  if(ctV == 0)
                     begin
                        case(stateV)
                          dispV:
