@@ -9,9 +9,6 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
    localparam VPULSE = 2;
    localparam VBP = 31;
 
-   input CLK, RST;
-   output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC;
-
    enum   logic[2:0] {dispH, fpH, pulseH, bpH} stateH;
    enum   logic[2:0] {dispV, fpV, pulseV, bpV} stateV;
 
