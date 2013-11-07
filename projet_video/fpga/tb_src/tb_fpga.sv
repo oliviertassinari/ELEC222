@@ -20,7 +20,7 @@ module tb_fpga;
    always #10ns CLK = ~CLK;
 
 
-   always #19ns  CLK_AUX = ~CLK_AUX;
+   always #18.5ns  CLK_AUX = ~CLK_AUX;
 
 
    /* Instanciation d'un module fpga */
