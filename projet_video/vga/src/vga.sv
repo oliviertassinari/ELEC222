@@ -1,5 +1,5 @@
 module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
-                                                 output VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
+                                                 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
 
    localparam HFP = 16;
    localparam HPULSE = 96;
