@@ -1,4 +1,5 @@
-module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
+module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
+                                                 output VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
 
    localparam HFP = 16;
    localparam HPULSE = 96;
@@ -16,9 +17,6 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
 
    logic [$clog2(HDISP)-1:0] ctH = 0;
    logic [$clog2(VDISP)-1:0] ctV = 0;
-
-   logic rst_async;
-   reset #(.is_nrst('b0)) reset_i(.CLK(VGA_CLK), .RST(RST), .rst_async(rst_async));
 
    always_comb
      begin
@@ -43,7 +41,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(CLK, RST, VGA_CLK, VGA_HS, VGA_
 
    always_ff @(posedge VGA_CLK)
      begin
-        if(rst_async)
+        if(RST)
           begin
              stateH <= dispH;
              ctH <= HDISP;
