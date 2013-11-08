@@ -12,6 +12,8 @@
  *
  */
 
+`timescale 1ns/1ns
+
 module tb_fpga;
 
    logic CLK, SW, NRST, CLK_AUX;
