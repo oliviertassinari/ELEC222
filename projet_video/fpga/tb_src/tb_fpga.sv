@@ -27,7 +27,7 @@ module tb_fpga;
    always #18.5ns  CLK_AUX = ~CLK_AUX;
 
    /* Instanciation d'un module fpga */
-   fpga i_fpga(CLK, CLK_AUX, SW, NRST, LED_ROUGE, LED_VERTE, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B);
+   fpga #(.HDISP('d160), .VDISP('d120)) i_fpga(CLK, CLK_AUX, SW, NRST, LED_ROUGE, LED_VERTE, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B);
 
    initial
      begin: entree

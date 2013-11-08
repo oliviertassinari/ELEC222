@@ -12,7 +12,7 @@
  *
  */
 
-module fpga (input   CLK, CLK_AUX, SW, NRST,
+module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
              output  LED_VERTE, LED_ROUGE,
                      VGA_CLK, VGA_HS, VGA_VS, VGA_BLANCK, VGA_SYNC,
              output wire [9:0] VGA_R, VGA_G, VGA_B);
@@ -32,7 +32,7 @@ module fpga (input   CLK, CLK_AUX, SW, NRST,
    // Fin zone de test plaquette
 
    /* Module vga */
-   vga #(.HDISP('d160), .VDISP('d120)) vga_i(.CLK(CLK_AUX),.RST(rst_async),.VGA_CLK(VGA_CLK), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS), .VGA_BLANK(VGA_BLANCK), .VGA_SYNC(VGA_SYNC), .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B));
+   vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(.CLK(CLK_AUX),.RST(rst_async),.VGA_CLK(VGA_CLK), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS), .VGA_BLANK(VGA_BLANCK), .VGA_SYNC(VGA_SYNC), .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B));
 
 
 endmodule // fpga
