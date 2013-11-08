@@ -14,7 +14,7 @@
 
 module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
              output  LED_VERTE, LED_ROUGE,
-                     VGA_CLK, VGA_HS, VGA_VS, VGA_BLANCK, VGA_SYNC,
+                     VGA_CLK, VGA_HS, VGA_VS, VGA_BLANCK, VGA_SYNC, TD_RESET,
              output wire [9:0] VGA_R, VGA_G, VGA_B);
 
    /* Zone de test de fonctionnement de la plaquette */
@@ -25,6 +25,7 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST
 
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
+   assign TD_RESET = '1;
 
    always_ff @(posedge CLK or posedge rst_async)
      if (rst_async) cmpt <= '0;

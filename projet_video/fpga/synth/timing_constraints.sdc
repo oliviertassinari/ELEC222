@@ -2,7 +2,7 @@
 # Time Information
 #**************************************************************
 
-set_time_format -unit ns -decimal_places 1 
+set_time_format -unit ns -decimal_places 1
 
 
 #**************************************************************
@@ -28,3 +28,5 @@ set_false_path -from [get_ports SW] -to *
 # Les afficheurs
 set_false_path -from * -to [get_ports {LED_*}]
 
+# Ajout automatique des contraintes pour les PLL et les autres horloges dérivées
+derive_pll_clocks -create_base_clocks
