@@ -52,3 +52,45 @@ set_instance_assignment -name OUTPUT_PIN_LOAD 8 -to LED_VERTE
 
 # SW0
 set_location_assignment PIN_N25 -to SW
+
+# VGA
+set_location_assignment VGA_R[0] -to PIN_C8
+set_location_assignment VGA_R[1] -to PIN_F10
+set_location_assignment VGA_R[2] -to PIN_G10
+set_location_assignment VGA_R[3] -to PIN_D9
+set_location_assignment VGA_R[4] -to PIN_C9
+set_location_assignment VGA_R[5] -to PIN_A8
+set_location_assignment VGA_R[6] -to PIN_H11
+set_location_assignment VGA_R[7] -to PIN_H12
+set_location_assignment VGA_R[8] -to PIN_F11
+set_location_assignment VGA_R[9] -to PIN_E10
+set_location_assignment VGA_G[0] -to PIN_B9
+set_location_assignment VGA_G[1] -to PIN_A9
+set_location_assignment VGA_G[2] -to PIN_C10
+set_location_assignment VGA_G[3] -to PIN_D10
+set_location_assignment VGA_G[4] -to PIN_B10
+set_location_assignment VGA_G[5] -to PIN_A10
+set_location_assignment VGA_G[6] -to PIN_G11
+set_location_assignment VGA_G[7] -to PIN_D11
+set_location_assignment VGA_G[8] -to PIN_E12
+set_location_assignment VGA_G[9] -to PIN_D12
+set_location_assignment VGA_B[0] -to PIN_J13
+set_location_assignment VGA_B[1] -to PIN_J14
+set_location_assignment VGA_B[2] -to PIN_F12
+set_location_assignment VGA_B[3] -to PIN_G12
+set_location_assignment VGA_B[4] -to PIN_J10
+set_location_assignment VGA_B[5] -to PIN_J11
+set_location_assignment VGA_B[6] -to PIN_C11
+set_location_assignment VGA_B[7] -to PIN_B11
+set_location_assignment VGA_B[8] -to PIN_C12
+set_location_assignment VGA_B[9] -to PIN_B12
+set_location_assignment VGA_CLK -to PIN_B8
+set_location_assignment VGA_BLANK -to PIN_D6
+set_location_assignment VGA_HS -to PIN_A7
+set_location_assignment VGA_VS -to PIN_D8
+set_location_assignment TD_RESET -to PIN_C4
+set_location_assignment VGA_SYNC -to PIN_B7
+
+set_io_assignment 8 -name OUTPUT_PIN_LOAD -io_standard LVTTL
+
+set_location_assignment CLK_AUX -to PIN_D13
