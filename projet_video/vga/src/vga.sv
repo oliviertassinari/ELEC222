@@ -108,15 +108,15 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
 
    always_ff @(posedge VGA_CLK)
      begin
-        if (RST)
+        if(RST)
           begin
-             VGA_R <= 'b0;
-             VGA_G <= 'b0;
-             VGA_B <= 'b0;
+             VGA_R <= '0;
+             VGA_G <= '0;
+             VGA_B <= '0;
           end
         else
           begin
-             if (~(ctH % 16))
+             if((ctH % 16) == 0 || (ctV % 16) == 0)
                begin
                   VGA_R <= '1;
                   VGA_G <= '1;
@@ -128,19 +128,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
                   VGA_G <= '0;
                   VGA_B <= '0;
                end
-             if (~(ctV % 16))
-               begin
-                  VGA_R <= '1;
-                  VGA_G <= '1;
-                  VGA_B <= '1;
-               end
-             else
-               begin
-                  VGA_R <= '0;
-                  VGA_G <= '0;
-                  VGA_B <= '0;
-               end
-          end // else: !if(RST)
+          end
      end
 
 
