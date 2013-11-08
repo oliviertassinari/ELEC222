@@ -2,13 +2,13 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
                                                  output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC,
                                                  output logic [9:0] VGA_R, VGA_G, VGA_B);
 
-   localparam HFP = 16;
-   localparam HPULSE = 96;
-   localparam HBP = 48;
+   localparam logic [$clog2(HDISP)-1:0] HFP = 16;
+   localparam logic [$clog2(HDISP)-1:0] HPULSE = 96;
+   localparam logic [$clog2(HDISP)-1:0] HBP = 48;
 
-   localparam VFP = 11;
-   localparam VPULSE = 2;
-   localparam VBP = 31;
+   localparam logic [$clog2(VDISP)-1:0] VFP = 11;
+   localparam logic [$clog2(VDISP)-1:0] VPULSE = 2;
+   localparam logic [$clog2(VDISP)-1:0] VBP = 31;
 
    enum   logic[2:0] {dispH, fpH, pulseH, bpH} stateH;
    enum   logic[2:0] {dispV, fpV, pulseV, bpV} stateV;
