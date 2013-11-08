@@ -16,9 +16,15 @@ export SOURCE_FILES = $(FPGA_SRC_DIR)/fpga.sv $(TB_FPGA_SRC_DIR)/tb_fpga.sv $(VG
 .PHONY : all clean
 
 all:
+	vlib work
 	vlog +acc $(FPGA_SRC_DIR)/fpga.sv
+	vlog +acc $(FPGA_SRC_DIR)/reset.sv
 	vlog +acc $(TB_FPGA_SRC_DIR)/tb_fpga.sv
 	vlog +acc $(VGA_SRC_DIR)/vga.sv
 	vlog +acc $(VGA_SRC_DIR)/VGA_PLL.v
 	vsim tb_fpga -L altera_mf_ver
 
+clean :
+	rm -rf work
+	rm -rf *.wlf
+	rm -rf transcript

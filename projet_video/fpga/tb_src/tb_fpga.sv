@@ -12,11 +12,13 @@
  *
  */
 
-`timescale 1ns/1ns
+`timescale 1ns/100ps
 
 module tb_fpga;
 
-   logic CLK, SW, NRST, CLK_AUX;
+   bit CLK, SW, NRST, CLK_AUX;
+
+   logic [9:0] VGA_R, VGA_G, VGA_B;
 
    // Horloge 50Mhz
    always #10ns CLK = ~CLK;
@@ -24,9 +26,8 @@ module tb_fpga;
    // Horloge 27Mhz
    always #18.5ns  CLK_AUX = ~CLK_AUX;
 
-
    /* Instanciation d'un module fpga */
-   fpga i_fpga(CLK, CLK_AUX, SW, NRST, LED_ROUGE, LED_VERTE, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC);
+   fpga i_fpga(CLK, CLK_AUX, SW, NRST, LED_ROUGE, LED_VERTE, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B);
 
    initial
      begin: entree
@@ -51,7 +52,7 @@ module tb_fpga;
         end
 
         $display("done");
-        $finish;
+        $stop;
      end
 
 endmodule
