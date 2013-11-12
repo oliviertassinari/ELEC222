@@ -9,14 +9,18 @@
  *
  */
 
-module reset #(parameter is_nrst = 'b1)(input   CLK, RST,
+module reset #(parameter is_nrst = 1'b1)(input   CLK, RST,
               output logic rst_async);
 
    logic            registre;
+   logic            reset;
+
+   always_comb
+     reset = RST^is_nrst;
 
    /* Création d'un RESET asynchrone stable */
-   always_ff @(posedge CLK or posedge RST^is_nrst)
-     if(RST^is_nrst)
+   always_ff @(posedge CLK or posedge reset)
+     if(reset)
        {rst_async, registre} <= {1'b1, 1'b0};
      else
        {rst_async, registre} <= {registre, 1'b0};

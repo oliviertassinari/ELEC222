@@ -54,8 +54,8 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
           end
         else
           begin
-             ctH <= ctH - 1;
-             ctMireV <= ctMireV + 1;
+             ctH <= ctH - '1;
+             ctMireV <= ctMireV + '1;
 
              if(ctH == 0)
                begin
