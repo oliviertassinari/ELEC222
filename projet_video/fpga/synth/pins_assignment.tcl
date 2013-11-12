@@ -54,7 +54,6 @@ set_instance_assignment -name OUTPUT_PIN_LOAD 8 -to LED_VERTE
 set_location_assignment PIN_N25 -to SW
 
 # VGA
-# VGA
 set_location_assignment PIN_C8 -to VGA_R[0]
 set_location_assignment PIN_F10 -to VGA_R[1]
 set_location_assignment PIN_G10 -to VGA_R[2]

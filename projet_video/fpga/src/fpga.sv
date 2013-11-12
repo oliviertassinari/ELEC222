@@ -12,7 +12,7 @@
  *
  */
 
-module fpga #(parameter [9:0]HDISP = 640, [8:0]VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
+module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
              output  LED_VERTE, LED_ROUGE,
                      VGA_CLK, VGA_HS, VGA_VS, VGA_BLANCK, VGA_SYNC, TD_RESET,
              output wire [9:0] VGA_R, VGA_G, VGA_B);
