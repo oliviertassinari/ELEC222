@@ -9,7 +9,7 @@
  *
  */
 
-module reset #(parameter is_nrst = '1)(input   CLK, RST,
+module reset #(parameter is_nrst = 1'b1)(input   CLK, RST,
               output logic rst_async);
 
    logic            registre;

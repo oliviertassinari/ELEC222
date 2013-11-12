@@ -12,7 +12,7 @@
  *
  */
 
-module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
+module fpga #(parameter [9:0]HDISP = 640, [8:0]VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
              output  LED_VERTE, LED_ROUGE,
                      VGA_CLK, VGA_HS, VGA_VS, VGA_BLANCK, VGA_SYNC, TD_RESET,
              output wire [9:0] VGA_R, VGA_G, VGA_B);
@@ -21,7 +21,7 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST
    logic [25:0]     cmpt;
    logic            rst_async;
 
-   reset #(.is_nrst('b1)) reset_i(.CLK(CLK), .RST(NRST), .rst_async(rst_async));
+   reset #(.is_nrst(1'b1)) reset_i(.CLK(CLK), .RST(NRST), .rst_async(rst_async));
 
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
