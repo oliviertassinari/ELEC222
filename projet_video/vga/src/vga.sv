@@ -1,4 +1,4 @@
-module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
+module vga #(parameter [9:0]HDISP = 640, [8:0]VDISP = 480)(input CLK, RST,
                                                  output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC,
                                                  output logic [9:0] VGA_R, VGA_G, VGA_B);
 
@@ -107,8 +107,8 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
                          stateH <= dispH;
                          ctMireV <= 0;
                          ctH <= HDISP;
-                         ctV <= ctV - 1;
-                         ctMireH <= ctMireH + 1;
+                         ctV <= ctV - '1;
+                         ctMireH <= ctMireH + '1;
                       end
                   endcase
                end
