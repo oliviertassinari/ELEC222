@@ -60,9 +60,9 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
              ctH <= ctH - 1'b1;
              ctMireV <= ctMireV + 1'b1;
 
-             if(ctH == 1)
+             if(ctH == 0)
                begin
-                  if(ctV == 1)
+                  if(ctV == 0)
                     begin
                        case(stateV)
                          dispV:

@@ -17,7 +17,7 @@
 module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, NRST,
                                                   output logic        LED_VERTE, LED_ROUGE,
                                                                       VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, TD_RESET,
-                                                                      dram_clk,dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n,
+                                                                      dram_clk, dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n,
                                                   output logic [1:0]  dram_ba,
                                                   output logic [11:0] dram_addr,
                                                   inout wire [15:0]   dram_dq,
@@ -32,9 +32,9 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
    logic VGA_INT;
 
    reset #(.is_nrst(1'b1)) reset_i(CLK, NRST, rst_async);
+   wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
    vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(CLK_AUX, rst_async, VGA_INT, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B, wb16.master);
    wshb_pll wshb_pll_i(CLK, wshb_clk, dram_clk);
-   wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
    reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST, wshb_rst);
    wb16_sdram16 wb_sdram16_i
      (

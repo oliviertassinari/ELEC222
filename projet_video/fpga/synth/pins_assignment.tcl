@@ -94,3 +94,44 @@ set_location_assignment PIN_B7 -to VGA_SYNC
 set_io_assignment 8 -name OUTPUT_PIN_LOAD -io_standard LVTTL
 
 set_location_assignment PIN_D13 -to CLK_AUX
+
+
+# L'interface DRAM
+set_location_assignment PIN_T6 -to dram_addr[0]
+set_location_assignment PIN_V4 -to dram_addr[1]
+set_location_assignment PIN_V3 -to dram_addr[2]
+set_location_assignment PIN_W2 -to dram_addr[3]
+set_location_assignment PIN_W1 -to dram_addr[4]
+set_location_assignment PIN_U6 -to dram_addr[5]
+set_location_assignment PIN_U7 -to dram_addr[6]
+set_location_assignment PIN_U5 -to dram_addr[7]
+set_location_assignment PIN_W4 -to dram_addr[8]
+set_location_assignment PIN_W3 -to dram_addr[9]
+set_location_assignment PIN_Y1 -to dram_addr[10]
+set_location_assignment PIN_V5 -to dram_addr[11]
+set_location_assignment PIN_AE2 -to dram_ba[0]
+set_location_assignment PIN_AE3 -to dram_ba[1]
+set_location_assignment PIN_AB3 -to dram_cas_n
+set_location_assignment PIN_AA6 -to dram_cke
+set_location_assignment PIN_AA7 -to dram_clk
+set_location_assignment PIN_AC3 -to dram_cs_n
+set_location_assignment PIN_V6 -to dram_dq[0]
+set_location_assignment PIN_AA2 -to dram_dq[1]
+set_location_assignment PIN_AA1 -to dram_dq[2]
+set_location_assignment PIN_Y3 -to dram_dq[3]
+set_location_assignment PIN_Y4 -to dram_dq[4]
+set_location_assignment PIN_R8 -to dram_dq[5]
+set_location_assignment PIN_T8 -to dram_dq[6]
+set_location_assignment PIN_V7 -to dram_dq[7]
+set_location_assignment PIN_W6 -to dram_dq[8]
+set_location_assignment PIN_AB2 -to dram_dq[9]
+set_location_assignment PIN_AB1 -to dram_dq[10]
+set_location_assignment PIN_AA4 -to dram_dq[11]
+set_location_assignment PIN_AA3 -to dram_dq[12]
+set_location_assignment PIN_AC2 -to dram_dq[13]
+set_location_assignment PIN_AC1 -to dram_dq[14]
+set_location_assignment PIN_AA5 -to dram_dq[15]
+set_location_assignment PIN_AD2 -to dram_dqm[0]
+set_location_assignment PIN_Y5 -to dram_dqm[1]
+set_location_assignment PIN_AB4 -to dram_ras_n
+set_location_assignment PIN_AD3 -to dram_we_n
