@@ -161,6 +161,8 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
           end
      end
 
+
+   /* Maitre wishbone "bidon" */
    always_comb
      begin
         wb_m.dat_ms = 16'hBABE;

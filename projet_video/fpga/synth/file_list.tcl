@@ -13,4 +13,4 @@ set_global_assignment -name SYSTEMVERILOG_FILE ${TOPDIR}/wb16_sdram16/src/wb16_s
 set_global_assignment -name SYSTEMVERILOG_FILE ${TOPDIR}/wb16_sdram16/src/xess_sdramcntl.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ${TOPDIR}/wb16_sdram16/src/wb_bridge_xess.sv
 
-set_global_assignment -name SYSTEMVERILOG_FILE ${TOPDIR}/wishbone/wshb_if/wshb_if.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ${TOPDIR}/wshb_if/wshb_if.sv
