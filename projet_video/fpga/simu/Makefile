@@ -27,6 +27,4 @@ all:
 	vsim tb_fpga -L altera_mf_ver
 
 clean :
-	rm -rf work
-	rm -rf *.wlf
-	rm -rf transcript
+	rm -rf work *.wlf transcript *.mem

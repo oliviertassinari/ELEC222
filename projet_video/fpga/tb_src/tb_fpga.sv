@@ -19,6 +19,8 @@ module tb_fpga;
 
    bit CLK, SW, NRST, CLK_AUX;
    logic [9:0] VGA_R, VGA_G, VGA_B;
+   wire        LED_ROUGE, LED_VERTE;
+   wire        VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, TD_RESET;
 
    // Interface sdram
    wire        dram_clk;

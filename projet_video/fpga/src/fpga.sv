@@ -14,11 +14,10 @@
 
 `default_nettype none
 
-module fpga #(parameter HDISP = 640, VDISP = 480)(input CLK, CLK_AUX, SW, NRST,
-                                                  output              LED_VERTE, LED_ROUGE,
+module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, NRST,
+                                                  output logic        LED_VERTE, LED_ROUGE,
                                                                       VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, TD_RESET,
-                                                                      dram_clk,
-                                                  output logic        dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n,
+                                                                      dram_clk,dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n,
                                                   output logic [1:0]  dram_ba,
                                                   output logic [11:0] dram_addr,
                                                   inout wire [15:0]   dram_dq,

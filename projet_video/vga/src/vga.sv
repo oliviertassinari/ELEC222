@@ -1,6 +1,6 @@
 `default_nettype none
 
-module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
+module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
                                                  output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC,
                                                  output logic [9:0] VGA_R, VGA_G, VGA_B,
                                                  wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32.master wb_m);
