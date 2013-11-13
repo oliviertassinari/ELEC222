@@ -16,12 +16,23 @@
  **/
 `default_nettype none
 
-module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
-                                                 output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC,
-                                                 output logic [9:0] VGA_R, VGA_G, VGA_B,
-                                                 wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32.master wb_m);
+  module vga #(parameter HDISP = 640, VDISP = 480)(input wire
+                                                   CLK,
+                                                   RST,
+                                                   vga_enable,
+                                                 output logic
+                                                   VGA_CLK,
+                                                   VGA_HS,
+                                                   VGA_VS,
+                                                   VGA_BLANK,
+                                                   VGA_SYNC,
+                                                 output logic [9:0]
+                                                   VGA_R,
+                                                   VGA_G,
+                                                   VGA_B,
+                                                   wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32.master wb_m);
 
-   // Paramêtres locaux
+   /* Paramêtres locaux */
    localparam logic [$clog2(HDISP<<1)-1:0] HFP = 16;
    localparam logic [$clog2(HDISP<<1)-1:0] HPULSE = 96;
    localparam logic [$clog2(HDISP<<1)-1:0] HBP = 48;
@@ -33,8 +44,10 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
    logic [$clog2(HDISP<<1)-1:0] ctH;
    logic [$clog2(VDISP<<1)-1:0] ctV;
 
+   /* Instanciation des modules complémentaires */
    VGA_PLL vga_pll_i(CLK, VGA_CLK);
 
+   /* MAE pour protocole VGA */
    always_comb
      begin
         VGA_SYNC = 0;
@@ -68,18 +81,19 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
 
              if(ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
                begin
-                 ctH <= 0;
-                 ctV <= ctV + 1'b1;
+                  ctH <= 0;
+                  ctV <= ctV + 1'b1;
                end
 
              if(ctV == VDISP + VFP + VPULSE + VBP - 1'b1)
                begin
-                 ctH <= 0;
-                 ctV <= 0;
+                  ctH <= 0;
+                  ctV <= 0;
                end
           end
      end
 
+   /* Génération de la mire */
    always_ff @(posedge VGA_CLK)
      begin
         if(RST)
@@ -87,6 +101,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
              VGA_R <= '0;
              VGA_G <= '0;
              VGA_B <= '0;
+             vga_enable <= 0;
           end
         else
           begin
@@ -106,7 +121,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
      end
 
 
-   // Maitre wishbone "bidon"
+   /* Maitre wishbone "bidon" */
    always_comb
      begin
         wb_m.dat_ms = 16'hBABE;

@@ -41,7 +41,31 @@ module tb_fpga;
    always #18.5ns  CLK_AUX = ~CLK_AUX;
 
    // Instanciation d'un module fpga
-   fpga #(.HDISP('d160), .VDISP('d120)) i_fpga(CLK, CLK_AUX, SW, NRST, LED_ROUGE, LED_VERTE, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, TD_RESET, dram_clk, dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n, dram_ba, dram_addr, dram_dq, dram_dqm,VGA_R, VGA_G, VGA_B);
+   fpga #(.HDISP('d160), .VDISP('d120)) i_fpga(CLK,
+                                               CLK_AUX,
+                                               SW,
+                                               NRST,
+                                               LED_ROUGE,
+                                               LED_VERTE,
+                                               VGA_CLK,
+                                               VGA_HS,
+                                               VGA_VS,
+                                               VGA_BLANK,
+                                               VGA_SYNC,
+                                               TD_RESET,
+                                               dram_clk,
+                                               dram_cke,
+                                               dram_cs_n,
+                                               dram_ras_n,
+                                               dram_cas_n,
+                                               dram_we_n,
+                                               dram_ba,
+                                               dram_addr,
+                                               dram_dq,
+                                               dram_dqm,
+                                               VGA_R,
+                                               VGA_G,
+                                               VGA_B);
 
    // sdram
    km416s4030 SDRAM
