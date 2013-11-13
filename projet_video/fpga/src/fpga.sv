@@ -38,7 +38,7 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
    reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST, wshb_rst);
    wb16_sdram16 wb_sdram16_i
      (
-      // Wishbone 32 bits slave interface
+      // Wishbone 16 bits slave interface
       .wb_s(wb16.slave),
       // SDRAM
       .cke(dram_cke),                      // clock-enable to SDRAM

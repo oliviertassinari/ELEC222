@@ -103,7 +103,7 @@ module tb_fpga;
 
         NRST = 1'b1;
 
-        repeat(1000)
+        repeat(2000)
         begin
            @(posedge CLK);
            SW = $random;
