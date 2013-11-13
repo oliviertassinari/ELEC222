@@ -12,16 +12,46 @@
  *
  */
 
-module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST,
-             output  LED_VERTE, LED_ROUGE,
-                     VGA_CLK, VGA_HS, VGA_VS, VGA_BLANCK, VGA_SYNC, TD_RESET,
-             output wire [9:0] VGA_R, VGA_G, VGA_B);
+`default_nettype none
+
+module fpga #(parameter HDISP = 640, VDISP = 480)(input CLK, CLK_AUX, SW, NRST,
+                                                  output              LED_VERTE, LED_ROUGE,
+                                                                      VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, TD_RESET,
+                                                                      dram_clk,
+                                                  output logic        dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n,
+                                                  output logic [1:0]  dram_ba,
+                                                  output logic [11:0] dram_addr,
+                                                  inout wire [15:0]   dram_dq,
+                                                  output logic [1:0]  dram_dqm,
+                                                  output wire [9:0]   VGA_R, VGA_G, VGA_B);
 
    /* Zone de test de fonctionnement de la plaquette */
    logic [25:0]     cmpt;
    logic            rst_async;
+   wire wshb_clk;
+   wire wshb_rst;
+   logic VGA_INT;
 
-   reset #(.is_nrst(1'b1)) reset_i(.CLK(CLK), .RST(NRST), .rst_async(rst_async));
+   reset #(.is_nrst(1'b1)) reset_i(CLK, NRST, rst_async);
+   vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(CLK_AUX, rst_async, VGA_INT, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B, wb16.master);
+   wshb_pll wshb_pll_i(CLK, wshb_clk, dram_clk);
+   wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
+   reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST, wshb_rst);
+   wb16_sdram16 wb_sdram16_i
+     (
+      // Wishbone 32 bits slave interface
+      .wb_s(wb16.slave),
+      // SDRAM
+      .cke(dram_cke),                      // clock-enable to SDRAM
+      .cs_n(dram_cs_n),                    // chip-select to SDRAM
+      .ras_n(dram_ras_n),                  // SDRAM row address strobe
+      .cas_n(dram_cas_n),                  // SDRAM column address strobe
+      .we_n(dram_we_n),                    // SDRAM write enable
+      .ba(dram_ba),                        // SDRAM bank address
+      .sAddr(dram_addr),                   // SDRAM row/column address
+      .sDQ(dram_dq),                       // data from and to SDRAM
+      .dqm(dram_dqm)                       // enable bytes of SDRAM databus
+      );
 
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
@@ -31,13 +61,8 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input   CLK, CLK_AUX, SW, NRST
      if (rst_async) cmpt <= '0;
      else cmpt <= cmpt + 1'd1;
    // Fin zone de test plaquette
-   logic            VGA_INT;
 
    assign VGA_CLK = ~VGA_INT;
 
-   /* Module vga */
-   vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(.CLK(CLK_AUX),.RST(rst_async),.VGA_CLK(VGA_INT), .VGA_HS(VGA_HS), .VGA_VS(VGA_VS), .VGA_BLANK(VGA_BLANCK), .VGA_SYNC(VGA_SYNC), .VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B));
-
-
-endmodule // fpga
+endmodule
 

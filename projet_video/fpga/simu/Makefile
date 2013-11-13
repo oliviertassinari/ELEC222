@@ -19,9 +19,11 @@ all:
 	vlib work
 	vlog +acc $(FPGA_SRC_DIR)/fpga.sv
 	vlog +acc $(FPGA_SRC_DIR)/reset.sv
+	vlog +acc $(FPGA_SRC_DIR)/wshb_pll.v
 	vlog +acc $(TB_FPGA_SRC_DIR)/tb_fpga.sv
 	vlog +acc $(VGA_SRC_DIR)/vga.sv
 	vlog +acc $(VGA_SRC_DIR)/VGA_PLL.v
+	./../../wb16_sdram16/compile_wshb_sdram_models
 	vsim tb_fpga -L altera_mf_ver
 
 clean :

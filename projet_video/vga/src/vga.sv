@@ -1,6 +1,9 @@
+`default_nettype none
+
 module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
                                                  output logic VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC,
-                                                 output logic [9:0] VGA_R, VGA_G, VGA_B);
+                                                 output logic [9:0] VGA_R, VGA_G, VGA_B,
+                                                 wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32.master wb_m);
 
    localparam logic [$clog2(HDISP)-1:0] HFP = 16;
    localparam logic [$clog2(HDISP)-1:0] HPULSE = 96;
@@ -13,13 +16,13 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
    enum   logic[2:0] {dispH, fpH, pulseH, bpH} stateH;
    enum   logic[2:0] {dispV, fpV, pulseV, bpV} stateV;
 
-   logic [$clog2(HDISP)-1:0] ctH = 0;
-   logic [$clog2(VDISP)-1:0] ctV = 0;
+   logic [$clog2(HDISP)-1:0] ctH;
+   logic [$clog2(VDISP)-1:0] ctV;
 
-   logic [3:0]               ctMireH = 0;
-   logic [3:0]               ctMireV = 0;
+   logic [3:0]               ctMireH;
+   logic [3:0]               ctMireV;
 
-   VGA_PLL i_vga_pll(CLK, VGA_CLK);
+   VGA_PLL vga_pll_i(CLK, VGA_CLK);
 
    always_comb
      begin
@@ -49,17 +52,17 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
              ctH <= HDISP;
              stateV <= dispV;
              ctV <= VDISP;
-             ctMireV <= 0;
-             ctMireH <= 0;
+             ctMireV <= 1;
+             ctMireH <= 1;
           end
         else
           begin
              ctH <= ctH - 1'b1;
              ctMireV <= ctMireV + 1'b1;
 
-             if(ctH == 0)
+             if(ctH == 1)
                begin
-                  if(ctV == 0)
+                  if(ctV == 1)
                     begin
                        case(stateV)
                          dispV:
@@ -81,7 +84,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
                            begin
                               stateV <= dispV;
                               ctV <= VDISP;
-                              ctMireH <= 0;
+                              ctMireH <= 1;
                            end
                        endcase
                     end
@@ -105,7 +108,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
                     bpH:
                       begin
                          stateH <= dispH;
-                         ctMireV <= 0;
+                         ctMireV <= 1;
                          ctH <= HDISP;
                          ctV <= ctV - 1'b1;
                          ctMireH <= ctMireH + 1'b1;
@@ -125,7 +128,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
           end
         else
           begin
-             if(ctMireH == 0 || ctMireV == 0)
+             if(ctMireH == 1 || ctMireV == 1)
                begin
                   VGA_R <= '1;
                   VGA_G <= '1;
@@ -140,5 +143,16 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input CLK, RST,
           end
      end
 
+   always_comb
+     begin
+        wb_m.dat_ms = 16'hBABE;
+        wb_m.adr = '0;
+        wb_m.cyc = 1'b1;
+        wb_m.sel = 2'b11;
+        wb_m.stb = 1'b1;
+        wb_m.we = 1'b1;
+        wb_m.cti = '0;
+        wb_m.bte = '0;
+     end
 
 endmodule
