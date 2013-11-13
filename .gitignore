@@ -1,4 +1,7 @@
 
+*.mem
+*.wlf
+
 # Compilation result
 work
 transcript

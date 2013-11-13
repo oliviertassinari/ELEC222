@@ -1,6 +1,6 @@
 # Le nom du projet doit être le nom du module de plus haut niveau
 export PROJET = fpga
-export TOPDIR = $(shell pwd)/../..
+export TOPDIR = $(shell pwd)/../../
 
 
 .PHONY: all clean program
