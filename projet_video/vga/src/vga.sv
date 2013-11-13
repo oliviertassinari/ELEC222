@@ -1,4 +1,4 @@
-/*
+/**
  * Création du module vga
  *
  * Paramètre 	        Commentaire  	         Valeur    Unité
@@ -13,7 +13,7 @@
  * VPULSE 	            Largeur de la sync image 2 	       lignes
  * VBP 	                Vertical Back Porch 	 31 	   lignes
  *
- */
+ **/
 `default_nettype none
 
 module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
@@ -106,7 +106,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
      end
 
 
-   /* Maitre wishbone "bidon" */
+   // Maitre wishbone "bidon"
    always_comb
      begin
         wb_m.dat_ms = 16'hBABE;
