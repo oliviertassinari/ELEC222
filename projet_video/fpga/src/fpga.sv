@@ -20,22 +20,28 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
                                                                       dram_clk, dram_cke, dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n,
                                                   output logic [1:0]  dram_ba,
                                                   output logic [11:0] dram_addr,
-                                                  inout wire [15:0]   dram_dq,
+                                                  input  wire  [15:0] dram_dq,
                                                   output logic [1:0]  dram_dqm,
-                                                  output wire [9:0]   VGA_R, VGA_G, VGA_B);
+                                                  output wire  [9:0]  VGA_R, VGA_G, VGA_B);
 
-   /* Zone de test de fonctionnement de la plaquette */
-   logic [25:0]     cmpt;
-   logic            rst_async;
-   wire wshb_clk;
-   wire wshb_rst;
-   logic VGA_INT;
+   logic                                                              rst_async;
+   wire                                                               wshb_clk;
+   wire                                                               wshb_rst;
+   logic                                                              VGA_INT;
 
+   /* Reset */
    reset #(.is_nrst(1'b1)) reset_i(CLK, NRST, rst_async);
-   wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
+   reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST),
+
+   /* VGA */
    vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(CLK_AUX, rst_async, VGA_INT, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B, wb16.master);
+   assign VGA_CLK = ~VGA_INT;
+
+   /* Interface Wishbone */
+   wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
    wshb_pll wshb_pll_i(CLK, wshb_clk, dram_clk);
-   reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST, wshb_rst);
+
+   /* controleur de SDRAM */
    wb16_sdram16 wb_sdram16_i
      (
       // Wishbone 16 bits slave interface
@@ -52,6 +58,10 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
       .dqm(dram_dqm)                       // enable bytes of SDRAM databus
       );
 
+
+   /* Zone de test de fonctionnement de la plaquette */
+   logic [25:0]     cmpt;
+
    assign LED_ROUGE = SW;
    assign LED_VERTE = cmpt[25];
    assign TD_RESET = '1;
@@ -61,7 +71,7 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
      else cmpt <= cmpt + 1'd1;
    // Fin zone de test plaquette
 
-   assign VGA_CLK = ~VGA_INT;
+
 
 endmodule
 

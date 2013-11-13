@@ -1,3 +1,19 @@
+/*
+ * Création du module vga
+ *
+ * Paramètre 	        Commentaire  	         Valeur    Unité
+ * Fpix 	            fréquence pixel 	     25,2 	   Mhz
+ * Fdisp 	            fréquence image 	     60 	   images/sec
+ * HDISP 	            Largeur de l'image 	     640 	   pixels
+ * VDISP 	            Hauteur de l'image 	     480 	   lignes
+ * HFP 	                Horizontal Front Porch   16 	   pixels
+ * HPULSE 	            Largeur de la sync ligne 96 	   pixels
+ * HBP 	                Horizontal Back Porch 	 48 	   pixels
+ * VFP 	                Vertical Front Porch 	 11 	   lignes
+ * VPULSE 	            Largeur de la sync image 2 	       lignes
+ * VBP 	                Vertical Back Porch 	 31 	   lignes
+ *
+ */
 `default_nettype none
 
 module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
@@ -5,6 +21,8 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
                                                  output logic [9:0] VGA_R, VGA_G, VGA_B,
                                                  wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32.master wb_m);
 
+
+   /* Paramêtres locaux */
    localparam logic [$clog2(HDISP)-1:0] HFP = 16;
    localparam logic [$clog2(HDISP)-1:0] HPULSE = 96;
    localparam logic [$clog2(HDISP)-1:0] HBP = 48;
