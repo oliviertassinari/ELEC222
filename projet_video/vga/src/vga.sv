@@ -21,24 +21,17 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
                                                  output logic [9:0] VGA_R, VGA_G, VGA_B,
                                                  wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32.master wb_m);
 
+   // Paramêtres locaux
+   localparam logic [$clog2(HDISP<<1)-1:0] HFP = 16;
+   localparam logic [$clog2(HDISP<<1)-1:0] HPULSE = 96;
+   localparam logic [$clog2(HDISP<<1)-1:0] HBP = 48;
 
-   /* Paramêtres locaux */
-   localparam logic [$clog2(HDISP)-1:0] HFP = 16;
-   localparam logic [$clog2(HDISP)-1:0] HPULSE = 96;
-   localparam logic [$clog2(HDISP)-1:0] HBP = 48;
+   localparam logic [$clog2(VDISP<<1)-1:0] VFP = 11;
+   localparam logic [$clog2(VDISP<<1)-1:0] VPULSE = 2;
+   localparam logic [$clog2(VDISP<<1)-1:0] VBP = 31;
 
-   localparam logic [$clog2(VDISP)-1:0] VFP = 11;
-   localparam logic [$clog2(VDISP)-1:0] VPULSE = 2;
-   localparam logic [$clog2(VDISP)-1:0] VBP = 31;
-
-   enum   logic[2:0] {dispH, fpH, pulseH, bpH} stateH;
-   enum   logic[2:0] {dispV, fpV, pulseV, bpV} stateV;
-
-   logic [$clog2(HDISP)-1:0] ctH;
-   logic [$clog2(VDISP)-1:0] ctV;
-
-   logic [3:0]               ctMireH;
-   logic [3:0]               ctMireV;
+   logic [$clog2(HDISP<<1)-1:0] ctH;
+   logic [$clog2(VDISP<<1)-1:0] ctV;
 
    VGA_PLL vga_pll_i(CLK, VGA_CLK);
 
@@ -46,92 +39,43 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
      begin
         VGA_SYNC = 0;
 
-        if(stateV == dispV && stateH == dispH)
+        if(ctH < HDISP + HFP || ctH >= HDISP + HFP + HPULSE)
+          VGA_HS = 1;
+        else
+          VGA_HS = 0;
+
+        if(ctV < VDISP + VFP || ctV >= VDISP + VFP + VPULSE)
+          VGA_VS = 1;
+        else
+          VGA_VS = 0;
+
+        if(ctV < VDISP && ctH < HDISP)
           VGA_BLANK = 1;
         else
           VGA_BLANK = 0;
-
-        if(stateV == pulseV)
-          VGA_VS = 0;
-        else
-          VGA_VS = 1;
-
-        if(stateH == pulseH)
-          VGA_HS = 0;
-        else
-          VGA_HS = 1;
      end
 
    always_ff @(posedge VGA_CLK)
      begin
         if(RST)
           begin
-             stateH <= dispH;
-             ctH <= HDISP;
-             stateV <= dispV;
-             ctV <= VDISP;
-             ctMireV <= 1;
-             ctMireH <= 1;
+             ctH <= 0;
+             ctV <= 0;
           end
         else
           begin
-             ctH <= ctH - 1'b1;
-             ctMireV <= ctMireV + 1'b1;
+             ctH <= ctH + 1'b1;
 
-             if(ctH == 0)
+             if(ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
                begin
-                  if(ctV == 0)
-                    begin
-                       case(stateV)
-                         dispV:
-                           begin
-                              stateV <= fpV;
-                              ctV <= VFP;
-                           end
-                         fpV:
-                           begin
-                              stateV <= pulseV;
-                              ctV <= VPULSE;
-                           end
-                         pulseV:
-                           begin
-                              stateV <= bpV;
-                              ctV <= VBP;
-                           end
-                         bpV:
-                           begin
-                              stateV <= dispV;
-                              ctV <= VDISP;
-                              ctMireH <= 1;
-                           end
-                       endcase
-                    end
+                 ctH <= 0;
+                 ctV <= ctV + 1'b1;
+               end
 
-                  case(stateH)
-                    dispH:
-                      begin
-                         stateH <= fpH;
-                         ctH <= HFP;
-                      end
-                    fpH:
-                      begin
-                         stateH <= pulseH;
-                         ctH <= HPULSE;
-                      end
-                    pulseH:
-                      begin
-                         stateH <= bpH;
-                         ctH <= HBP;
-                      end
-                    bpH:
-                      begin
-                         stateH <= dispH;
-                         ctMireV <= 1;
-                         ctH <= HDISP;
-                         ctV <= ctV - 1'b1;
-                         ctMireH <= ctMireH + 1'b1;
-                      end
-                  endcase
+             if(ctV == VDISP + VFP + VPULSE + VBP - 1'b1)
+               begin
+                 ctH <= 0;
+                 ctV <= 0;
                end
           end
      end
@@ -146,7 +90,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, RST,
           end
         else
           begin
-             if(ctMireH == 1 || ctMireV == 1)
+             if(ctH[3:0] == 4'b1111 || ctV[3:0] == 4'b0)
                begin
                   VGA_R <= '1;
                   VGA_G <= '1;
