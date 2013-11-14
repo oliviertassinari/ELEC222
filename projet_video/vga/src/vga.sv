@@ -43,9 +43,11 @@
    logic [$clog2(HDISP<<1)-1:0]            ctH;
    logic [$clog2(VDISP<<1)-1:0]            ctV;
 
+   logic [$clog2(HDISP)-1:0]            ctMireH;
+   logic [$clog2(VDISP)-1:0]            ctMireV;
+
    logic                                   vga_enable, mire_loaded;
-   logic [15:0]                            fifo_ms_dat, fifo_sm_dat;
-   logic                                   fifo_ms_read, fifo_ms_rempty, fifo_ms_write, fifo_ms_wfull;
+   logic [15:0]                            fifo_sm_dat;
    logic                                   fifo_sm_read, fifo_sm_rempty, fifo_sm_write, fifo_sm_wfull;
 
    /* Instanciation des modules complémentaires */
@@ -53,7 +55,6 @@
 
    /* Fifo */
    fifo_async #(16, 256)  fifo_async_i_sm(RST, VGA_CLK, fifo_sm_read, fifo_sm_dat, fifo_sm_rempty, wb_m.clk, wb_m.dat_sm, fifo_sm_write, fifo_sm_wfull);
-   fifo_async #(16, 256)  fifo_async_i_ms(RST, wb_m.clk, fifo_ms_read, wb_m.dat_ms, fifo_ms_rempty, VGA_CLK, fifo_ms_dat, fifo_ms_write, fifo_ms_wfull);
 
    /* MAE pour protocole VGA */
    always_comb
@@ -108,28 +109,14 @@
              VGA_R <= '0;
              VGA_G <= '0;
              VGA_B <= '0;
-             vga_enable <= 0;
-             mire_loaded <= 0;
           end
         else
           begin
-             if(mire_loaded && fifo_sm_wfull)
-               vga_enable <= 1;
-
-             if(!mire_loaded && ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
-               mire_loaded <= 1;
-
-             if(!mire_loaded)
+             if(vga_enable)
                begin
                   VGA_R <= ctH;
                   VGA_G <= ctH;
                   VGA_B <= ctV;
-               end
-             else if(vga_enable && VGA_BLANK)
-               begin
-                  VGA_R <= {5'b0, fifo_ms_dat[4:0]};
-                  VGA_G <= {4'b0, fifo_ms_dat[5:0]};
-                  VGA_B <= {5'b0, fifo_ms_dat[4:0]};
                end
              else
                begin
@@ -140,47 +127,49 @@
           end
      end
 
+   // Chargement de la mire
+   always_ff @(posedge wb_m.clk)
+     begin
+        if(RST)
+          begin
+             mire_loaded <= 0;
+             ctMireH <= 0;
+             ctMireV <= 0;
+          end
+        else
+          if(!mire_loaded)
+            begin
+               ctMireH <= ctMireH + 1'b1;
+
+               if(ctMireH == HDISP - 1'b1)
+                 begin
+                    ctMireH <= 0;
+
+                    if(ctMireV == VDISP - 1'b1)
+                      begin
+                         ctMireV <= 0;
+                         mire_loaded <= 1;
+                      end
+                    else
+                      ctMireV <= ctMireV + 1'b1;
+                 end
+            end
+     end
+
    // Contrôleur
    always_ff @(posedge VGA_CLK)
      begin
         if(RST)
           begin
-             wb_m.adr = '0;
-             wb_m.cyc = '0;
-             wb_m.sel = '0;
-             wb_m.stb = '0;
-             wb_m.we = '0;
-             wb_m.cti = '0;
-             wb_m.bte = '0;
-             fifo_ms_dat <= '0;
-             fifo_ms_write <= 0;
-             fifo_ms_read <= 0;
+             wb_m.adr <= '0;
+             wb_m.cyc <= '0;
+             wb_m.sel <= '0;
+             wb_m.stb <= '0;
+             wb_m.we <= '0;
+             wb_m.cti <= '0;
+             wb_m.bte <= '0;
              fifo_sm_read <= 0;
              fifo_sm_write <= 0;
-          end
-        else
-          begin
-             fifo_ms_dat <= {VGA_R[4:0], VGA_G[5:0], VGA_B[4:0]};
-             fifo_ms_write <= VGA_BLANK; // On ecrit dans la fifo les pixels utiles.
-             fifo_ms_read <= 1;
-
-             fifo_sm_read <= vga_enable && VGA_BLANK;
-             fifo_sm_write <= wb_m.ack && mire_loaded;
-
-             wb_m.adr <= 2*(ctH+ctV*HDISP);
-
-             wb_m.cyc <= 1'b1;
-             wb_m.sel <= 2'b11;
-             wb_m.stb <= ~fifo_sm_wfull; // Si la FIFO est pleine, le contrôleur de lecture doit arrêter de faire des requètes
-             wb_m.we <= ~mire_loaded;
-
-             // Reset du burst cycle
-             if(ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
-               wb_m.cti <= 3'b0;
-             else
-               wb_m.cti <= 3'b10;
-
-             wb_m.bte <= '0;
           end
      end
 
