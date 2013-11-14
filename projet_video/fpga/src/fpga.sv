@@ -41,17 +41,6 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
    wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
    wshb_pll wshb_pll_i(CLK, wshb_clk, dram_clk);
 
-   /* Fifo */
-   fifo_async #(.DATA_WIDTH('d16), .DEPTH_WIDTH('d256)) fifo_async_i1(.rst(RST),
-                                                                     .rclk(dram_clk),
-                                                                     .read(),
-                                                                     .rdata(),
-                                                                     .rempty(),
-                                                                     .wclk(wshb_clk),
-                                                                     .wdata(),
-                                                                     .write(),
-                                                                     .wfull());
-
    /* Controleur de SDRAM */
    wb16_sdram16 wb_sdram16_i
      (

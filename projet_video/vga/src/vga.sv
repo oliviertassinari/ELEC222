@@ -44,8 +44,14 @@
    logic [$clog2(HDISP<<1)-1:0] ctH;
    logic [$clog2(VDISP<<1)-1:0] ctV;
 
+   logic [9:0] dat_ms, dat_sm;
+
    /* Instanciation des modules complémentaires */
    VGA_PLL vga_pll_i(CLK, VGA_CLK);
+
+   /* Fifo */
+   fifo_async #(10, 256)  fifo_async_i_sm(RST, CLK, , dat_sm, , wb_m.clk, wb_m.dat_sm, , );
+   fifo_async #(10, 256)  fifo_async_i_ms(RST, wb_m.clk, , wb_m.dat_ms, , CLK, dat_ms, , );
 
    /* MAE pour protocole VGA */
    always_comb
