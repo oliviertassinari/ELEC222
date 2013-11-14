@@ -122,7 +122,7 @@ module tb_fpga;
         @(negedge CLK);
         @(negedge CLK);
         NRST = 1'b0;
-        repeat(10)
+        repeat(30)
           @(negedge CLK);
 
         NRST = 1'b1;

@@ -19,7 +19,6 @@
   module vga #(parameter HDISP = 640, VDISP = 480)(input wire
                                                    CLK,
                                                    RST,
-                                                   vga_enable,
                                                  output logic
                                                    VGA_CLK,
                                                    VGA_HS,
@@ -41,17 +40,20 @@
    localparam logic [$clog2(VDISP<<1)-1:0] VPULSE = 2;
    localparam logic [$clog2(VDISP<<1)-1:0] VBP = 31;
 
-   logic [$clog2(HDISP<<1)-1:0] ctH;
-   logic [$clog2(VDISP<<1)-1:0] ctV;
+   logic [$clog2(HDISP<<1)-1:0]            ctH;
+   logic [$clog2(VDISP<<1)-1:0]            ctV;
 
-   logic [9:0] dat_ms, dat_sm;
+   logic                                   vga_enable, mire_loaded;
+   logic [15:0]                            fifo_ms_dat, fifo_sm_dat;
+   logic                                   fifo_ms_read, fifo_ms_rempty, fifo_ms_write, fifo_ms_wfull;
+   logic                                   fifo_sm_read, fifo_sm_rempty, fifo_sm_write, fifo_sm_wfull;
 
    /* Instanciation des modules complémentaires */
    VGA_PLL vga_pll_i(CLK, VGA_CLK);
 
    /* Fifo */
-   fifo_async #(10, 256)  fifo_async_i_sm(RST, CLK, , dat_sm, , wb_m.clk, wb_m.dat_sm, , );
-   fifo_async #(10, 256)  fifo_async_i_ms(RST, wb_m.clk, , wb_m.dat_ms, , CLK, dat_ms, , );
+   fifo_async #(16, 256)  fifo_async_i_sm(RST, VGA_CLK, fifo_sm_read, fifo_sm_dat, fifo_sm_rempty, wb_m.clk, wb_m.dat_sm, fifo_sm_write, fifo_sm_wfull);
+   fifo_async #(16, 256)  fifo_async_i_ms(RST, wb_m.clk, fifo_ms_read, wb_m.dat_ms, fifo_ms_rempty, VGA_CLK, fifo_ms_dat, fifo_ms_write, fifo_ms_wfull);
 
    /* MAE pour protocole VGA */
    always_comb
@@ -74,6 +76,7 @@
           VGA_BLANK = 0;
      end
 
+   // Compteurs
    always_ff @(posedge VGA_CLK)
      begin
         if(RST)
@@ -99,7 +102,7 @@
           end
      end
 
-   /* Génération de la mire */
+   /* Affichage */
    always_ff @(posedge VGA_CLK)
      begin
         if(RST)
@@ -108,14 +111,27 @@
              VGA_G <= '0;
              VGA_B <= '0;
              vga_enable <= 0;
+             mire_loaded <= 0;
           end
         else
           begin
-             if(ctH[3:0] == 4'b1111 || ctV[3:0] == 4'b0)
+             if(mire_loaded && fifo_sm_wfull)
+               vga_enable <= 1;
+
+             if(!mire_loaded && ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
+               mire_loaded <= 1;
+
+             if(!mire_loaded)
                begin
                   VGA_R <= '1;
                   VGA_G <= '1;
                   VGA_B <= '1;
+               end
+             else if(vga_enable && VGA_BLANK)
+               begin
+                  VGA_R <= {fifo_ms_dat[4:0], 5'b11111};
+                  VGA_G <= {fifo_ms_dat[5:0], 4'b1111};
+                  VGA_B <= {fifo_ms_dat[4:0], 5'b11111};
                end
              else
                begin
@@ -126,18 +142,21 @@
           end
      end
 
-
-   /* Maitre wishbone "bidon" */
-   always_comb
+   // Contrôleur
+   always_ff @(posedge VGA_CLK)
      begin
-        wb_m.dat_ms = 16'hBABE;
-        wb_m.adr = '0;
-        wb_m.cyc = 1'b1;
-        wb_m.sel = 2'b11;
-        wb_m.stb = 1'b1;
-        wb_m.we = 1'b1;
-        wb_m.cti = '0;
-        wb_m.bte = '0;
+        fifo_ms_dat <= {VGA_R[9:5], VGA_G[9:4], VGA_B[9:5]};
+        fifo_ms_write <= VGA_BLANK; // On ecrit dans la fifo les pixels utiles.
+        fifo_ms_read <= 1;
+
+        wb_m.adr <= 2*(ctH+ctV*HDISP);
+
+        wb_m.cyc <= 1'b1;
+        wb_m.sel <= 2'b11;
+        wb_m.stb <= ~fifo_sm_wfull; // Si la FIFO est pleine, le contrôleur de lecture doit arrêter de faire des requètes
+        wb_m.we <= ~mire_loaded;
+        wb_m.cti <= 2'b10;
+        wb_m.bte <= '0;
      end
 
 endmodule

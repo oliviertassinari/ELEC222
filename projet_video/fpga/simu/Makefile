@@ -5,6 +5,7 @@
 export SIM_DIR = $(shell pwd)
 
 # source files directory
+export TOP_DIR = $(SIM_DIR)/../..
 export FPGA_SRC_DIR = $(SIM_DIR)/../src
 export TB_FPGA_SRC_DIR = $(SIM_DIR)/../tb_src
 export VGA_SRC_DIR = $(SIM_DIR)/../../vga/src
@@ -17,12 +18,13 @@ export SOURCE_FILES = $(FPGA_SRC_DIR)/fpga.sv $(TB_FPGA_SRC_DIR)/tb_fpga.sv $(VG
 
 all:
 	vlib work
-	vlog +acc $(FPGA_SRC_DIR)/fpga.sv
-	vlog +acc $(FPGA_SRC_DIR)/reset.sv
-	vlog +acc $(FPGA_SRC_DIR)/wshb_pll.v
-	vlog +acc $(TB_FPGA_SRC_DIR)/tb_fpga.sv
-	vlog +acc $(VGA_SRC_DIR)/vga.sv
-	vlog +acc $(VGA_SRC_DIR)/VGA_PLL.v
+	vlog +acc $(TOP_DIR)/fpga/src/fpga.sv
+	vlog +acc $(TOP_DIR)/fpga/src/reset.sv
+	vlog +acc $(TOP_DIR)/fpga/src/wshb_pll.v
+	vlog +acc $(TOP_DIR)/fpga/tb_src/tb_fpga.sv
+	vlog +acc $(TOP_DIR)/vga/src/vga.sv
+	vlog +acc $(TOP_DIR)/vga/src/VGA_PLL.v
+	vlog +acc $(TOP_DIR)/fifo_async/src/fifo_async.sv
 	./../../wb16_sdram16/compile_wshb_sdram_models
 	vsim tb_fpga -L altera_mf_ver
 

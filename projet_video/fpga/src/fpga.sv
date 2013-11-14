@@ -31,15 +31,15 @@ module fpga #(parameter HDISP = 640, VDISP = 480)(input wire CLK, CLK_AUX, SW, N
 
    /* Reset */
    reset #(.is_nrst(1'b1)) reset_i(CLK, NRST, rst_async);
-   reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST),
-
-   /* VGA */
-   vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(CLK_AUX, rst_async, VGA_INT, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B, wb16.master);
-   assign VGA_CLK = ~VGA_INT;
+   reset #(.is_nrst(1'b1)) reset_i_wshb(wshb_clk, NRST, wshb_rst);
 
    /* Interface Wishbone */
    wshb_if_DATA_BYTES_2_ADDRESS_WIDTH_32 wb16(wshb_clk, wshb_rst);
    wshb_pll wshb_pll_i(CLK, wshb_clk, dram_clk);
+
+   /* VGA */
+   vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_i(CLK_AUX, rst_async, VGA_INT, VGA_HS, VGA_VS, VGA_BLANK, VGA_SYNC, VGA_R, VGA_G, VGA_B, wb16.master);
+   assign VGA_CLK = ~VGA_INT;
 
    /* Controleur de SDRAM */
    wb16_sdram16 wb_sdram16_i
