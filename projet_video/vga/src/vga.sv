@@ -119,19 +119,18 @@
              if(!mire_loaded && ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
                mire_loaded <= 1;
 
-             //if(!mire_loaded || mire_loaded)
-             if((ctH[3:0] == 4'b1111 || ctV[3:0] == 4'b0) && VGA_BLANK)
+             if(!mire_loaded)
                begin
-                  VGA_R <= '1;
-                  VGA_G <= '1;
-                  VGA_B <= '1;
+                  VGA_R <= ctH;
+                  VGA_G <= ctH;
+                  VGA_B <= ctV;
                end
-             /*else if(vga_enable && VGA_BLANK)
+             else if(vga_enable && VGA_BLANK)
                begin
-                  VGA_R <= {fifo_ms_dat[4:0], 5'b11111};
-                  VGA_G <= {fifo_ms_dat[5:0], 4'b1111};
-                  VGA_B <= {fifo_ms_dat[4:0], 5'b11111};
-               end*/
+                  VGA_R <= {5'b0, fifo_ms_dat[4:0]};
+                  VGA_G <= {4'b0, fifo_ms_dat[5:0]};
+                  VGA_B <= {5'b0, fifo_ms_dat[4:0]};
+               end
              else
                begin
                   VGA_R <= '0;
@@ -144,20 +143,45 @@
    // Contrôleur
    always_ff @(posedge VGA_CLK)
      begin
-        fifo_ms_dat <= {VGA_R[9:5], VGA_G[9:4], VGA_B[9:5]};
-        fifo_ms_write <= VGA_BLANK; // On ecrit dans la fifo les pixels utiles.
-        fifo_ms_read <= 1;
+        if(RST)
+          begin
+             wb_m.adr = '0;
+             wb_m.cyc = '0;
+             wb_m.sel = '0;
+             wb_m.stb = '0;
+             wb_m.we = '0;
+             wb_m.cti = '0;
+             wb_m.bte = '0;
+             fifo_ms_dat <= '0;
+             fifo_ms_write <= 0;
+             fifo_ms_read <= 0;
+             fifo_sm_read <= 0;
+             fifo_sm_write <= 0;
+          end
+        else
+          begin
+             fifo_ms_dat <= {VGA_R[4:0], VGA_G[5:0], VGA_B[4:0]};
+             fifo_ms_write <= VGA_BLANK; // On ecrit dans la fifo les pixels utiles.
+             fifo_ms_read <= 1;
 
-        fifo_sm_read <= vga_enable & VGA_BLANK;
+             fifo_sm_read <= vga_enable && VGA_BLANK;
+             fifo_sm_write <= wb_m.ack && mire_loaded;
 
-        wb_m.adr <= 2*(ctH+ctV*HDISP);
+             wb_m.adr <= 2*(ctH+ctV*HDISP);
 
-        wb_m.cyc <= 1'b1;
-        wb_m.sel <= 2'b11;
-        wb_m.stb <= ~fifo_sm_wfull; // Si la FIFO est pleine, le contrôleur de lecture doit arrêter de faire des requètes
-        wb_m.we <= ~mire_loaded;
-        wb_m.cti <= 2'b10;
-        wb_m.bte <= '0;
+             wb_m.cyc <= 1'b1;
+             wb_m.sel <= 2'b11;
+             wb_m.stb <= ~fifo_sm_wfull; // Si la FIFO est pleine, le contrôleur de lecture doit arrêter de faire des requètes
+             wb_m.we <= ~mire_loaded;
+
+             // Reset du burst cycle
+             if(ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
+               wb_m.cti <= 3'b0;
+             else
+               wb_m.cti <= 3'b10;
+
+             wb_m.bte <= '0;
+          end
      end
 
 endmodule
