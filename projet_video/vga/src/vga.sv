@@ -91,13 +91,11 @@
              if(ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
                begin
                   ctH <= 0;
-                  ctV <= ctV + 1'b1;
-               end
 
-             if(ctV == VDISP + VFP + VPULSE + VBP - 1'b1)
-               begin
-                  ctH <= 0;
-                  ctV <= 0;
+                  if(ctV == VDISP + VFP + VPULSE + VBP - 1'b1)
+                    ctV <= 0;
+                  else
+                    ctV <= ctV + 1'b1;
                end
           end
      end
@@ -121,11 +119,11 @@
              if(!mire_loaded && ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
                mire_loaded <= 1;
 
-             if(!mire_loaded)
+             if(!mire_loaded || mire_loaded)
                begin
-                  VGA_R <= '1;
-                  VGA_G <= '1;
-                  VGA_B <= '1;
+                  VGA_R <= ctH;
+                  VGA_G <= ctH;
+                  VGA_B <= ctV;
                end
              else if(vga_enable && VGA_BLANK)
                begin
