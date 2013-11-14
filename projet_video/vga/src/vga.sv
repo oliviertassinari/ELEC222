@@ -46,7 +46,7 @@
    logic [$clog2(HDISP)-1:0]            ctMireH;
    logic [$clog2(VDISP)-1:0]            ctMireV;
 
-   logic                                   vga_enable, mire_loaded;
+   logic                                   vga_enable, mire_loadedn, wait_ack;
    logic [15:0]                            fifo_sm_dat;
    logic                                   fifo_sm_read, fifo_sm_rempty, fifo_sm_write, fifo_sm_wfull;
 
@@ -77,7 +77,7 @@
           VGA_BLANK = 0;
      end
 
-   // Compteurs
+   // Compteurs de synchronisation
    always_ff @(posedge VGA_CLK)
      begin
         if(RST)
@@ -127,7 +127,7 @@
           end
      end
 
-   // Chargement de la mire
+   // Compteurs de la mire
    always_ff @(posedge wb_m.clk)
      begin
         if(RST)
@@ -156,8 +156,8 @@
             end
      end
 
-   // Contrôleur
-   always_ff @(posedge VGA_CLK)
+   // Contrôleur wishbone
+   always_ff @(posedge wb_m.clk)
      begin
         if(RST)
           begin
@@ -168,8 +168,26 @@
              wb_m.we <= '0;
              wb_m.cti <= '0;
              wb_m.bte <= '0;
-             fifo_sm_read <= 0;
-             fifo_sm_write <= 0;
+             wait_ack <= 0;
+          end
+        else
+          begin
+            wb_m.cyc <= 1;
+            wb_m.sel <= 2'b2;
+            wb_m.cti <= '0;
+            wb_m.bte <= '0;
+
+            if(!mire_loaded)
+              begin
+                if(!wait_ack || )
+                  wb_m.adr <= 2*(ctMireH + HDISP*ctMireV);
+                  wb_m.stb <= 1;
+                  wb_m.we <= 1;
+                  wait_ack <= 1;
+              end
+            else
+              begin
+              end
           end
      end
 
