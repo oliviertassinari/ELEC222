@@ -119,18 +119,19 @@
              if(!mire_loaded && ctH == HDISP - 1'b1 && ctV == VDISP - 1'b1)
                mire_loaded <= 1;
 
-             if(!mire_loaded || mire_loaded)
+             //if(!mire_loaded || mire_loaded)
+             if((ctH[3:0] == 4'b1111 || ctV[3:0] == 4'b0) && VGA_BLANK)
                begin
-                  VGA_R <= ctH;
-                  VGA_G <= ctH;
-                  VGA_B <= ctV;
+                  VGA_R <= '1;
+                  VGA_G <= '1;
+                  VGA_B <= '1;
                end
-             else if(vga_enable && VGA_BLANK)
+             /*else if(vga_enable && VGA_BLANK)
                begin
                   VGA_R <= {fifo_ms_dat[4:0], 5'b11111};
                   VGA_G <= {fifo_ms_dat[5:0], 4'b1111};
                   VGA_B <= {fifo_ms_dat[4:0], 5'b11111};
-               end
+               end*/
              else
                begin
                   VGA_R <= '0;
@@ -146,6 +147,8 @@
         fifo_ms_dat <= {VGA_R[9:5], VGA_G[9:4], VGA_B[9:5]};
         fifo_ms_write <= VGA_BLANK; // On ecrit dans la fifo les pixels utiles.
         fifo_ms_read <= 1;
+
+        fifo_sm_read <= vga_enable & VGA_BLANK;
 
         wb_m.adr <= 2*(ctH+ctV*HDISP);
 
