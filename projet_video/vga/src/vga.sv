@@ -46,7 +46,7 @@
    logic [$clog2(HDISP)-1:0]            ctMireH;
    logic [$clog2(VDISP)-1:0]            ctMireV;
 
-   logic                                   vga_enable, mire_loadedn, wait_ack;
+   logic                                   vga_enable, mire_loaded, wait_ack, fifo_start;
    logic [15:0]                            fifo_sm_dat;
    logic                                   fifo_sm_read, fifo_sm_rempty, fifo_sm_write, fifo_sm_wfull;
 
@@ -54,7 +54,15 @@
    VGA_PLL vga_pll_i(CLK, VGA_CLK);
 
    /* Fifo */
-   fifo_async #(16, 256)  fifo_async_i_sm(RST, VGA_CLK, fifo_sm_read, fifo_sm_dat, fifo_sm_rempty, wb_m.clk, wb_m.dat_sm, fifo_sm_write, fifo_sm_wfull);
+   fifo_async #(16, 8)  fifo_async_i_sm(.rst(RST),
+                                        .rclk(VGA_CLK),
+                                        .read(fifo_sm_read),
+                                        .rdata(fifo_sm_dat),
+                                        .rempty(fifo_sm_rempty),
+                                        .wclk(wb_m.clk),
+                                        .wdata(wb_m.dat_sm),
+                                        .write(fifo_sm_write),
+                                        .wfull(fifo_sm_wfull));
 
    /* MAE pour protocole VGA */
    always_comb
@@ -114,9 +122,9 @@
           begin
              if(vga_enable)
                begin
-                  VGA_R <= ctH;
-                  VGA_G <= ctH;
-                  VGA_B <= ctV;
+                  VGA_R <= { fifo_sm_dat[4:0], 5'b0 };
+                  VGA_G <= { fifo_sm_dat[10:5], 4'b0 };
+                  VGA_B <= { fifo_sm_dat[15:11], 5'b0 };
                end
              else
                begin
@@ -139,24 +147,27 @@
         else
           if(!mire_loaded)
             begin
-               ctMireH <= ctMireH + 1'b1;
-
-               if(ctMireH == HDISP - 1'b1)
+               if(!wait_ack || wb_m.ack)
                  begin
-                    ctMireH <= 0;
+                    ctMireH <= ctMireH + 1'b1;
 
-                    if(ctMireV == VDISP - 1'b1)
+                    if(ctMireH == HDISP - 1'b1)
                       begin
-                         ctMireV <= 0;
-                         mire_loaded <= 1;
+                         ctMireH <= 0;
+
+                         if(ctMireV == VDISP - 1'b1)
+                           begin
+                              ctMireV <= 0;
+                              mire_loaded <= 1;
+                           end
+                         else
+                           ctMireV <= ctMireV + 1'b1;
                       end
-                    else
-                      ctMireV <= ctMireV + 1'b1;
                  end
             end
      end
 
-   // Contrôleur wishbone
+   // Controleur wishbone et FIFO
    always_ff @(posedge wb_m.clk)
      begin
         if(RST)
@@ -169,26 +180,62 @@
              wb_m.cti <= '0;
              wb_m.bte <= '0;
              wait_ack <= 0;
+             vga_enable <= 0;
+             fifo_start <= 0;
           end
         else
           begin
-            wb_m.cyc <= 1;
-            wb_m.sel <= 2'b2;
-            wb_m.cti <= '0;
-            wb_m.bte <= '0;
+             wb_m.cyc <= 1;
+             wb_m.sel <= 2'b11;
+             wb_m.cti <= '0;
+             wb_m.bte <= '0;
 
-            if(!mire_loaded)
-              begin
-                if(!wait_ack || )
-                  wb_m.adr <= 2*(ctMireH + HDISP*ctMireV);
-                  wb_m.stb <= 1;
-                  wb_m.we <= 1;
-                  wait_ack <= 1;
-              end
-            else
-              begin
-              end
+             if(!mire_loaded)
+               begin
+                  if(wb_m.ack)
+                    wait_ack <= 0;
+
+                  if(!wait_ack || wb_m.ack)
+                    begin
+                       wb_m.adr <= 2*(ctMireH + HDISP*ctMireV);
+                       wb_m.dat_ms <= { ctMireH[4:0], ctMireH[5:0], ctMireV[4:0] };
+                       wb_m.stb <= 1;
+                       wb_m.we <= 1;
+                       wait_ack <= 1;
+                    end
+               end
+             else
+               begin
+                  wb_m.adr <= 2*(ctH + HDISP*ctV);
+
+                  if(ctV < VDISP && ctH < HDISP && fifo_start)
+                    wb_m.stb <= 1;
+                  else
+                    wb_m.stb <= 0;
+
+                  if(fifo_sm_wfull)
+                    vga_enable <= 1;
+
+                  if(!fifo_start && ctV == VDISP + VFP + VPULSE + VBP - 1'b1 && ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
+                    fifo_start <= 1;
+
+                  wb_m.we <= 0;
+               end
           end
+     end
+
+   // Controle FIFO
+   always_comb
+     begin
+        if(fifo_start)
+          fifo_sm_write = 1;
+        else
+          fifo_sm_write = 0;
+
+        if(vga_enable)
+          fifo_sm_read = 1;
+        else
+          fifo_sm_read = 0;
      end
 
 endmodule
