@@ -127,6 +127,10 @@
                   VGA_R <= { fifo_sm_dat[4:0], 5'b0 };
                   VGA_G <= { fifo_sm_dat[10:5], 4'b0 };
                   VGA_B <= { fifo_sm_dat[15:11], 5'b0 };
+                  /*
+                  VGA_R <= { ctH*ctV[4:0], 5'b0 };
+                  VGA_G <= { ctH*ctV[5:0], 4'b0 };
+                  VGA_B <= { ctH*ctV[4:0], 5'b0 };*/
                end
              else
                begin
@@ -211,7 +215,7 @@
                     end
                   else
                     begin
-                       wb_m.stb <= 1;
+                       wb_m.stb <= 0;
 
                        if(!vga_enable && ctV == VDISP + VFP + VPULSE + VBP - 1'b1 && ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
                          vga_enable <= 1;
@@ -225,7 +229,7 @@
      begin
         fifo_sm_write = 1;
 
-        if(vga_enable)
+        if(vga_enable && VGA_BLANK)
           fifo_sm_read = 1;
         else
           fifo_sm_read = 0;
