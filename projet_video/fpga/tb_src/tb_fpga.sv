@@ -41,7 +41,7 @@ module tb_fpga;
    always #18.5ns  CLK_AUX = ~CLK_AUX;
 
    // Instanciation d'un module fpga
-   fpga #(.HDISP('d160), .VDISP('d120)) i_fpga(CLK,
+   fpga #(.HDISP('d70), .VDISP('d50)) i_fpga(CLK,
                                                CLK_AUX,
                                                SW,
                                                NRST,

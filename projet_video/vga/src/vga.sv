@@ -40,11 +40,13 @@
    localparam logic [$clog2(VDISP<<1)-1:0] VPULSE = 2;
    localparam logic [$clog2(VDISP<<1)-1:0] VBP = 31;
 
+   localparam logic [$clog2(HDISP*VDISP)-1:0] NBPIX = HDISP*VDISP;
+
    logic [$clog2(HDISP<<1)-1:0]            ctH;
    logic [$clog2(VDISP<<1)-1:0]            ctV;
 
-   logic [$clog2(HDISP)-1:0]            ctMireH;
-   logic [$clog2(VDISP)-1:0]            ctMireV;
+   logic [$clog2(NBPIX)-1:0]               ctMire;
+   logic [$clog2(NBPIX)-1:0]               ctFifo;
 
    logic                                   vga_enable, mire_loaded, wait_ack, fifo_start;
    logic [15:0]                            fifo_sm_dat;
@@ -141,29 +143,25 @@
         if(RST)
           begin
              mire_loaded <= 0;
-             ctMireH <= 0;
-             ctMireV <= 0;
+             wait_ack <= 0;
+             ctMire <= 0;
           end
         else
           if(!mire_loaded)
             begin
                if(!wait_ack || wb_m.ack)
                  begin
-                    ctMireH <= ctMireH + 1'b1;
+                    ctMire <= ctMire + 1'b1;
+                    wait_ack <= 1;
 
-                    if(ctMireH == HDISP - 1'b1)
+                    if(ctMire == NBPIX-1)
                       begin
-                         ctMireH <= 0;
-
-                         if(ctMireV == VDISP - 1'b1)
-                           begin
-                              ctMireV <= 0;
-                              mire_loaded <= 1;
-                           end
-                         else
-                           ctMireV <= ctMireV + 1'b1;
+                         mire_loaded <= 1;
                       end
                  end
+
+               if(wb_m.ack)
+                 wait_ack <= 0;
             end
      end
 
@@ -179,9 +177,9 @@
              wb_m.we <= '0;
              wb_m.cti <= '0;
              wb_m.bte <= '0;
-             wait_ack <= 0;
              vga_enable <= 0;
              fifo_start <= 0;
+             ctFifo <= '0;
           end
         else
           begin
@@ -192,34 +190,32 @@
 
              if(!mire_loaded)
                begin
-                  if(wb_m.ack)
-                    wait_ack <= 0;
-
-                  if(!wait_ack || wb_m.ack)
-                    begin
-                       wb_m.adr <= 2*(ctMireH + HDISP*ctMireV);
-                       wb_m.dat_ms <= { ctMireH[4:0], ctMireH[5:0], ctMireV[4:0] };
-                       wb_m.stb <= 1;
-                       wb_m.we <= 1;
-                       wait_ack <= 1;
-                    end
+                  wb_m.adr <= 2*ctMire;
+                  wb_m.dat_ms <= {ctMire[4:0], ctMire[5:0], ctMire[4:0]};
+                  wb_m.stb <= 1;
+                  wb_m.we <= 1;
                end
              else
                begin
-                  wb_m.adr <= 2*(ctH + HDISP*ctV);
-
-                  if(ctV < VDISP && ctH < HDISP && fifo_start)
-                    wb_m.stb <= 1;
-                  else
-                    wb_m.stb <= 0;
-
-                  if(fifo_sm_wfull)
-                    vga_enable <= 1;
-
-                  if(!fifo_start && ctV == VDISP + VFP + VPULSE + VBP - 1'b1 && ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
-                    fifo_start <= 1;
-
+                  wb_m.adr <= 2*ctFifo;
                   wb_m.we <= 0;
+
+                  if(!fifo_sm_wfull)
+                    begin
+                       if(ctFifo == NBPIX-1)
+                         ctFifo <= 0;
+                       else
+                         ctFifo <= ctFifo + 1'b1;
+
+                       wb_m.stb <= 1;
+                    end
+                  else
+                    begin
+                       wb_m.stb <= 1;
+
+                       if(!vga_enable && ctV == VDISP + VFP + VPULSE + VBP - 1'b1 && ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
+                         vga_enable <= 1;
+                    end
                end
           end
      end
@@ -227,10 +223,7 @@
    // Controle FIFO
    always_comb
      begin
-        if(fifo_start)
-          fifo_sm_write = 1;
-        else
-          fifo_sm_write = 0;
+        fifo_sm_write = 1;
 
         if(vga_enable)
           fifo_sm_read = 1;
