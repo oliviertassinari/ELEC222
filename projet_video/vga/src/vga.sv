@@ -143,13 +143,12 @@
         if(RST)
           begin
              mire_loaded <= 0;
-             wait_ack <= 0;
              ctMire <= 0;
           end
         else
           if(!mire_loaded)
             begin
-               if(!wait_ack || wb_m.ack)
+               if(!wait_ack)
                  begin
                     ctMire <= ctMire + 1'b1;
                     wait_ack <= 1;
@@ -159,9 +158,6 @@
                          mire_loaded <= 1;
                       end
                  end
-
-               if(wb_m.ack)
-                 wait_ack <= 0;
             end
      end
 
@@ -180,6 +176,7 @@
              vga_enable <= 0;
              fifo_start <= 0;
              ctFifo <= '0;
+             wait_ack <= 1;
           end
         else
           begin
@@ -223,7 +220,10 @@
    // Controle FIFO
    always_comb
      begin
-        fifo_sm_write = 1;
+        if(wb_m.stb && wb_m.we == 0)
+          fifo_sm_write = 1;
+        else
+          fifo_sm_write = 0;
 
         if(vga_enable && VGA_BLANK)
           fifo_sm_read = 1;
