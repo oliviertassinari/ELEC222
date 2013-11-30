@@ -48,7 +48,7 @@
    logic [$clog2(NBPIX)-1:0]               ctMire;
    logic [$clog2(NBPIX)-1:0]               ctFifo;
 
-   logic                                   vga_enable, mire_loaded, wait_ack, fifo_start;
+   logic                                   mire_loaded, fifo_start;
    logic [15:0]                            fifo_sm_dat;
    logic                                   fifo_sm_read, fifo_sm_rempty, fifo_sm_write, fifo_sm_wfull;
 
