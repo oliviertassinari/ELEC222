@@ -124,9 +124,9 @@
           begin
              if(VGA_BLANK && fifo_start)
                begin
-                  VGA_R <= { fifo_sm_dat[4:0], 5'b0 };
-                  VGA_G <= { fifo_sm_dat[10:5], 4'b0 };
-                  VGA_B <= { fifo_sm_dat[15:11], 5'b0 };
+                  VGA_R <= { fifo_sm_dat[9:0] };
+                  VGA_G <= { 10'b0 };
+                  VGA_B <= { 10'b0 };
                end
              else
                begin
@@ -175,7 +175,7 @@
         if(!mire_loaded)
           begin
              wb_m.adr = 2*ctMire;
-             wb_m.dat_ms = { 10'b0, ctMire[5:0]};
+             wb_m.dat_ms = { 6'b0, ctMire[9:0]};
              wb_m.stb = 1;
              wb_m.we = 1;
           end
