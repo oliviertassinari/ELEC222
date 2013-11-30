@@ -23,7 +23,7 @@ all:
 	vlog +acc $(TOP_DIR)/vga/src/vga.sv
 	vlog +acc $(TOP_DIR)/vga/src/VGA_PLL.v
 	vlog +acc $(TOP_DIR)/fifo_async/src/fifo_async.sv
-	sh $(TOP_DIR)/wb16_sdram16/compile_wshb_sdram_models.sh
+	sh ./$(TOP_DIR)/wb16_sdram16/compile_wshb_sdram_models.sh
 	vsim tb_fpga -L altera_mf_ver
 
 clean :
