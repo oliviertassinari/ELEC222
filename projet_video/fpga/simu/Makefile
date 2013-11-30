@@ -2,13 +2,11 @@
 # @brief The project source files
 # @note  This file can be edited by the user to adapt it to its project
 
-export SIM_DIR = $(shell pwd)
-
 # source files directory
-export TOP_DIR = $(SIM_DIR)/../..
-export FPGA_SRC_DIR = $(SIM_DIR)/../src
-export TB_FPGA_SRC_DIR = $(SIM_DIR)/../tb_src
-export VGA_SRC_DIR = $(SIM_DIR)/../../vga/src
+export TOP_DIR = ../..
+export FPGA_SRC_DIR = ../src
+export TB_FPGA_SRC_DIR = ../tb_src
+export VGA_SRC_DIR = ../../vga/src
 
 # source files for synthesis
 export SOURCE_FILES = $(FPGA_SRC_DIR)/fpga.sv $(TB_FPGA_SRC_DIR)/tb_fpga.sv $(VGA_SRC_DIR)/vga.sv
@@ -25,7 +23,7 @@ all:
 	vlog +acc $(TOP_DIR)/vga/src/vga.sv
 	vlog +acc $(TOP_DIR)/vga/src/VGA_PLL.v
 	vlog +acc $(TOP_DIR)/fifo_async/src/fifo_async.sv
-	./../../wb16_sdram16/compile_wshb_sdram_models
+	sh $(TOP_DIR)/wb16_sdram16/compile_wshb_sdram_models.sh
 	vsim tb_fpga -L altera_mf_ver
 
 clean :
