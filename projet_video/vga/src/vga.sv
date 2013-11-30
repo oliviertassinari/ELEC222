@@ -143,7 +143,7 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire
         if(RST)
           begin
              mire_loaded <= 0;
-             ctMire <= 0;
+             ctMire <= '0;
           end
         else
           if(!mire_loaded)
