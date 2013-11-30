@@ -8,7 +8,7 @@ set_global_assignment -name DEVICE EP2C35F672C6
 
 # Un problème spécifique au circuit Cyclone II d'ALTERA concernant les mémoires.
 # L'outils Quartus propose à l'utilisateur plusieurs façons de traiter ce problème.
-set_parameter -name CYCLONEII_SAFE_WRITE VERIFIED_SAFE
+set_parameter -name CYCLONEII_SAFE_WRITE RESTRUCTURE
 #
 # cyclone II dual port ram issues
 # Possible options are:
