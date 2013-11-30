@@ -92,8 +92,8 @@ module vga #(parameter HDISP = 640, VDISP = 480)(input wire
      begin
         if(RST)
           begin
-             ctH <= 0;
-             ctV <= 0;
+             ctH <= '0;
+             ctV <= '0;
           end
         else
           begin
