@@ -197,22 +197,21 @@
              ctFifo <= '0;
           end
         else
-             if(mire_loaded)
-               begin
-                  if(wb_m.ack)
-                    begin
-                       if(ctFifo == NBPIX-1)
-                         ctFifo <= 0;
-                       else
-                         ctFifo <= ctFifo + 1'b1;
-                    end
-                  else
-                    begin
-                       if(fifo_sm_wfull && !fifo_start && ctV == VDISP + VFP + VPULSE + VBP - 1'b1 && ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
-                         fifo_start <= 1;
-                    end
-               end
-          end
+          if(mire_loaded)
+            begin
+               if(wb_m.ack)
+                 begin
+                    if(ctFifo == NBPIX-1)
+                      ctFifo <= 0;
+                    else
+                      ctFifo <= ctFifo + 1'b1;
+                 end
+               else
+                 begin
+                    if(fifo_sm_wfull && !fifo_start && ctV == VDISP + VFP + VPULSE + VBP - 1'b1 && ctH == HDISP + HFP + HPULSE + HBP - 1'b1)
+                      fifo_start <= 1;
+                 end
+            end
      end
 
    // Controle FIFO
