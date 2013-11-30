@@ -16,7 +16,7 @@
  **/
 `default_nettype none
 
-  module vga #(parameter HDISP = 640, VDISP = 480)(input wire
+module vga #(parameter HDISP = 640, VDISP = 480)(input wire
                                                    CLK,
                                                    RST,
                                                  output logic
