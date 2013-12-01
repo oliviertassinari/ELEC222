@@ -16,7 +16,7 @@
  **/
 `default_nettype none
 
-  module vga #(parameter HDISP = 640, VDISP = 480)(input wire
+module vga #(parameter HDISP = 640, VDISP = 480)(input wire
                                                    CLK,
                                                    RST,
                                                  output logic
@@ -92,8 +92,8 @@
      begin
         if(RST)
           begin
-             ctH <= 0;
-             ctV <= 0;
+             ctH <= '0;
+             ctV <= '0;
           end
         else
           begin
@@ -143,7 +143,7 @@
         if(RST)
           begin
              mire_loaded <= 0;
-             ctMire <= 0;
+             ctMire <= '0;
           end
         else
           if(!mire_loaded)
